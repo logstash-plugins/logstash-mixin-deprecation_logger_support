@@ -1,14 +1,12 @@
 # encoding: utf-8
-# require "logstash/devutils/rspec/spec_helper"
-
 
 require "logstash-core"
 
 require 'logstash/plugin_mixins/deprecation_logger_support'
 
 ##
-# subject: deprecation_logger
-# depends on: instance
+# @subject deprecation_logger
+# @requires: instance
 shared_examples_for 'DeprecationLogger' do
 
   if !LogStash::PluginMixins::DeprecationLoggerSupport::NATIVE_SUPPORT_PROVIDED
@@ -49,6 +47,10 @@ shared_examples_for 'DeprecationLogger' do
   end
 end
 
+##
+# @subject: instance
+# @param: method_name
+# @varargs: params
 shared_examples_for 'memoized method' do |method_name, *params|
   it 'returns the same object from successive calls' do
     first_return = instance.send(method_name, *params)
@@ -66,29 +68,35 @@ describe LogStash::PluginMixins::DeprecationLoggerSupport do
 
   context 'included into a class' do
     context 'that already includes Loggable' do
-      let(:class_with_deprecation_logger_support) { class_including_loggable.include(deprecation_logger_support) }
+      let(:class_with_deprecation_logger_support) do
+        Class.new(class_including_loggable) do
+          include LogStash::PluginMixins::DeprecationLoggerSupport
+        end
+      end
       context 'when instantiated' do
         subject(:instance) { class_with_deprecation_logger_support.new }
         context '#deprecation_logger' do
           it_behaves_like 'memoized method', :deprecation_logger
           context 'the returned object' do
-            subject(:deprecation_logger) { instance.send(:deprecation_logger) }
-            it_behaves_like 'DeprecationLogger'
+            it_behaves_like 'DeprecationLogger' do
+              subject(:deprecation_logger) { instance.send(:deprecation_logger) }
+            end
           end
         end
         context 'and class is a LogStash::Plugin' do
           let(:class_including_loggable) { Class.new(LogStash::Plugin) }
           subject(:instance) { class_with_deprecation_logger_support.new({}) }
           context '@deprecation_logger' do
-            subject(:deprecation_logger) { instance.instance_variable_get(:@deprecation_logger) }
-            it_behaves_like 'DeprecationLogger'
+            it_behaves_like 'DeprecationLogger' do
+              subject(:deprecation_logger) { instance.instance_variable_get(:@deprecation_logger) }
+            end
           end
         end
       end
     end
     context 'that does not include Loggable' do
       it 'errors helpfully' do
-        expect { class_not_including_loggable.include(deprecation_logger_support) }
+        expect { class_not_including_loggable.send(:include, LogStash::PluginMixins::DeprecationLoggerSupport) }
           .to raise_error(ArgumentError, /Loggable/)
       end
     end
@@ -96,12 +104,14 @@ describe LogStash::PluginMixins::DeprecationLoggerSupport do
 
   context 'extended into an object' do
     context 'that is Loggable' do
-      subject(:instance) { class_including_loggable.new.extend(deprecation_logger_support) }
+      subject(:instance) { class_including_loggable.new }
+      before(:each) { instance.extend(LogStash::PluginMixins::DeprecationLoggerSupport)}
       context '#deprecation_logger' do
         it_behaves_like 'memoized method', :deprecation_logger
         context 'the returned object' do
-          subject(:deprecation_logger) { instance.send(:deprecation_logger) }
-          it_behaves_like 'DeprecationLogger'
+          it_behaves_like 'DeprecationLogger' do
+            subject(:deprecation_logger) { instance.send(:deprecation_logger) }
+          end
         end
       end
     end

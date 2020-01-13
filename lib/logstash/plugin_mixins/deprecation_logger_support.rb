@@ -37,8 +37,8 @@ module LogStash
         fail(ArgumentError, "`#{base}` must be LogStash::Util::Loggable") unless base <= LogStash::Util::Loggable
 
         unless NATIVE_SUPPORT_PROVIDED
-          base.include(LegacyLoggableWarnAdapter)
-          base.include(LegacyInitAdapter) if base <= LogStash::Plugin
+          base.send(:include, LegacyLoggableWarnAdapter)
+          base.send(:include, LegacyInitAdapter) if base <= LogStash::Plugin
         end
       end
 
