@@ -34,7 +34,7 @@ module LogStash
       # @param base [Module]: a module or class that already includes the
       #                       Logstash Loggable utility
       def self.included(base)
-        fail(ArgumentError, "`#{base}` must be LogStash::Util::Loggable") unless base <= LogStash::Util::Loggable
+        fail(ArgumentError, "`#{base}` must be LogStash::Util::Loggable") unless base < LogStash::Util::Loggable
 
         unless NATIVE_SUPPORT_PROVIDED
           base.send(:include, LegacyLoggableWarnAdapter)
