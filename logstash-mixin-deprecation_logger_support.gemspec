@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.homepage      = 'https://github.com/logstash-plugins/logstash-mixin-deprecation_logger_support'
   s.require_paths = %w(lib)
 
-  s.files = %w(lib spec vendor).flat_map{|dir| Dir.glob("#{dir}/**/*")}+Dir.glob("*.md")
+  s.files = %w(lib spec vendor).flat_map{|dir| Dir.glob("#{dir}/**/*")}+Dir.glob(["*.md","LICENSE"])
 
   s.test_files = s.files.grep(%r{^(test|spec|features)/})
 
