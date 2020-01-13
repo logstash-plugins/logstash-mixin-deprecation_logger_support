@@ -1,0 +1,17 @@
+---
+sudo: required
+language: minimal
+matrix:
+  include:
+  - env: ELASTIC_STACK_VERSION=5.x
+  - env: ELASTIC_STACK_VERSION=6.x
+  - env: ELASTIC_STACK_VERSION=7.5.1 # release pre introduction of deprecation logger
+  - env: ELASTIC_STACK_VERSION=7.x
+  - env: ELASTIC_STACK_VERSION=7.x SNAPSHOT=true
+  - env: ELASTIC_STACK_VERSION=8.x SNAPSHOT=true
+  fast_finish: true
+#allow_failures:
+#  - env: ELASTIC_STACK_VERSION=8.x SNAPSHOT=true
+#  - env: ELASTIC_STACK_VERSION=7.x SNAPSHOT=true
+install: ci/unit/docker-setup.sh
+script: ci/unit/docker-run.sh

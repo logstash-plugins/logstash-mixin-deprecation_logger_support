@@ -25,6 +25,8 @@ Logstashes.
 
     class LogStash::Inputs::Foo < Logstash::Inputs::Base
       include LogStash::PluginMixins::DeprecationLoggerSupport
+
+      # ...
     end
     ~~~
 
