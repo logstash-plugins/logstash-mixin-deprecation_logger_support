@@ -1,3 +1,3 @@
 # 1.0.0
 
- - Implement Deprecation Logger as plugin support mixin
+ - Implements the Deprecation Logger from Logstash 7.6 as a version-independent plugin mixin.

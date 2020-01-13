@@ -1,9 +1,9 @@
 # Deprecation Logger Support Mixim
 
 This gem provides an API-compatible implementation of the Logstash Deprecation
-Logger introduced in Logstash Core v7.6. It can be added as a dependency of any
+Logger introduced in Logstash v7.6. It can be added as a dependency of any
 plugin that wishes to use the deprecation logger while still supporting older
-Logstashes.
+Logstash versions.
 
 ## Usage
 
@@ -41,4 +41,6 @@ Logstashes.
 
 ## Development
 
-This gem *MUST* remain API-stable at 1.x.
+This gem:
+ - *MUST* remain API-stable at 1.x
+ - *MUST NOT* introduce additional runtime dependencies
