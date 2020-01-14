@@ -3,8 +3,10 @@
 require 'logstash/version'
 require 'logstash/namespace'
 
-require 'rubygems/requirement'
-require 'rubygems/version'
+require 'logstash/plugin'
+
+require_relative 'deprecation_logger_support/legacy_loggable_warn_adapter'
+require_relative 'deprecation_logger_support/legacy_init_adapter'
 
 module LogStash
   module PluginMixins
@@ -21,57 +23,37 @@ module LogStash
     # by `Loggable#logger`.
     module DeprecationLoggerSupport
 
+      NATIVE_SUPPORT_PROVIDED = LogStash::Util::Loggable.method_defined?(:deprecation_logger)
+
       ##
-      # Mixing the `DeprecationLogger` into any module or class that is
-      # a `LogStash::Util::Loggable` ensures that the result provides a
-      # `Loggable#deprecation_logger` that is API-compatible
-      # with the one introduced to `Loggable` in Logstash 7.6.
+      # Including the `DeprecationLoggerSupport` into any module or class that
+      # is already a `LogStash::Util::Loggable` ensures that the result provides
+      # a `Loggable#deprecation_logger` that is API-compatible with the one
+      # introduced to `Loggable` in Logstash 7.6.
       #
-      # @param base [Module]: a module or class that includes the Logstash
-      #                       Loggable utility
+      # @param base [Module]: a module or class that already includes the
+      #                       Logstash Loggable utility
       def self.included(base)
-        fail(ArgumentError, "`#{base}` must be LogStash::Util::Loggable") unless base <= LogStash::Util::Loggable
+        fail(ArgumentError, "`#{base}` must be LogStash::Util::Loggable") unless base < LogStash::Util::Loggable
+
+        unless NATIVE_SUPPORT_PROVIDED
+          base.send(:include, LegacyLoggableWarnAdapter)
+          base.send(:include, LegacyInitAdapter) if base <= LogStash::Plugin
+        end
       end
 
-      # In Logstash >= 7.6.0, `Loggable#deprecation_logger` is provided by core,
-      # so there is no need to provide it here.
-      unless Gem::Requirement.new('>= 7.6.0').satisfied_by?(Gem::Version.new(LOGSTASH_VERSION))
-        ##
-        # The `DeprecationLoggerLegacyAdapter` implementes the deprecation logger
-        # API by falling through to the existing logger.
-        #
-        # @api private
-        class DeprecationLoggerLegacyAdapter
-          def initialize(base_logger)
-            @base_logger = base_logger
-          end
+      ##
+      # Extending the `DeprecationLoggerSupport` into any`LogStash::Util::Loggable`
+      # will ensure that it provides a `Loggable#deprecation_logger` that is
+      # API-compatible with the one introduced in `Loggable` in Logstash 7.6
+      #
+      # @param base [LogStash::Util::Loggable]: an object whose class already
+      #                                         includes the Logstash Loggable
+      #                                         utility
+      def self.extended(base)
+        fail(ArgumentError, "`#{base}` must be LogStash::Util::Loggable") unless base.kind_of?(LogStash::Util::Loggable)
 
-          ##
-          # @overload deprecated(message)
-          #   @param message [String]: a complete message string
-          #
-          # @overload deprecated(template, replacement)
-          #   @param template [String]: a template string contiaining exactly
-          #                             one `{}` placeholder
-          #   @param replacement [Object]: an object to be stringified and
-          #                                inserted in place of the placeholder
-          def deprecated(message, *args)
-            @base_logger.warn("DEPRECATED: #{message}", *args)
-          end
-        end
-        private_constant :DeprecationLoggerLegacyAdapter
-
-        def initialize(*args)
-          super if defined?(super)
-
-          deprecation_logger # memoize
-        end
-
-        ##
-        # @return [#deprecated]
-        def deprecation_logger
-          @deprecation_logger ||= DeprecationLoggerLegacyAdapter.new(logger)
-        end
+        base.extend(LegacyLoggableWarnAdapter) unless NATIVE_SUPPORT_PROVIDED
       end
     end
   end
