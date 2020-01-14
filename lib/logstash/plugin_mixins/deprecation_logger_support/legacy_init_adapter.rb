@@ -5,9 +5,9 @@ module LogStash
     module DeprecationLoggerSupport
 
       ##
-      # The `LegacyInitAdapter` is used to hook into the intialization of
-      # Logstash Plugins to ensure that a `@deprecation_logger` instance variable
-      # is initialized.
+      # The `LegacyInitAdapter` is used to hook into the initialization of
+      # Logstash Plugins to ensure that a `@deprecation_logger` instance
+      # variable is initialized.
       #
       # @api internal (@see DeprecationLoggerSupport::included)
       module LegacyInitAdapter
