@@ -35,7 +35,7 @@ Logstash versions.
 
     ~~~ ruby
       def register
-        deprecation_logger.deprecate("your message")
+        deprecation_logger.deprecated("your message")
       end
     ~~~
 
