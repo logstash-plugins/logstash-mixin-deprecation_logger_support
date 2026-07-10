@@ -1,3 +1,5 @@
+[![Unit Tests](https://github.com/logstash-plugins/logstash-mixin-deprecation_logger_support/actions/workflows/unit-tests.yml/badge.svg?branch=main)](https://github.com/logstash-plugins/logstash-mixin-deprecation_logger_support/actions/workflows/unit-tests.yml)
+
 # Deprecation Logger Support Mixin
 
 This gem provides an API-compatible implementation of the Logstash Deprecation
