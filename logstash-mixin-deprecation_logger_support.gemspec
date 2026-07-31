@@ -17,5 +17,6 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'logstash-core', '>= 5.0.0'
 
+  s.add_development_dependency 'logstash-devutils'
   s.add_development_dependency 'rspec', '~> 3.9'
 end
