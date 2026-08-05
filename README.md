@@ -1,5 +1,7 @@
 # Deprecation Logger Support Mixin
 
+[![Unit Tests](https://github.com/logstash-plugins/logstash-mixin-deprecation_logger_support/actions/workflows/unit-tests.yml/badge.svg?branch=main)](https://github.com/logstash-plugins/logstash-mixin-deprecation_logger_support/actions/workflows/unit-tests.yml)
+
 This gem provides an API-compatible implementation of the Logstash Deprecation
 Logger introduced in Logstash v7.6. It can be added as a dependency of any
 plugin that wishes to use the deprecation logger while still supporting older
